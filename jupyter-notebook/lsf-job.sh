@@ -2,7 +2,7 @@
 
 # customize to fit your own environment
 conda_env="notebook"
-projects_folder="~/projects"
+projects_folder="${HOME}/projects"
 
 
 
@@ -18,7 +18,7 @@ conda activate ${conda_env}
 
 unset XDG_RUNTIME_DIR
 
-mkdir -p ${projects_folder}projects_folder
+mkdir -p ${projects_folder}
 
 jupyter notebook \
   --no-browser \
