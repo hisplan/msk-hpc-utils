@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # customize to fit your own environment
-conda_env="seqc"
+conda_env="notebook"
 projects_folder="~/projects"
 
 

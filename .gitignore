@@ -1,3 +1,4 @@
+.DS_Store
 .ipynb_checkpoints
 jupyter-notebook/notebook.launcher.log
 jupyter-notebook/notebook.stderr.log

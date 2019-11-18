@@ -162,19 +162,17 @@ def get_notebook_url(stdout_log):
     return None
 
 
-def show_next_step(exec_host, path_private_key, notbook_url):
+def show_next_step(exec_host, notbook_url):
 
     msg = """Instructions:
 
-From your local machine, run the following:
+From your local workstation, run the command below:
 
-$ ssh-add -K {path_private_key}
-$ ssh -o ServerAliveInterval=120 -A -i {path_private_key} -L 7777:localhost:7777 {user}@lilac.mskcc.org ssh -L 7777:localhost:7777 -N {exec_host}
+$ ssh -o ServerAliveInterval=120 -A -L 7777:localhost:7777 {user}@lilac.mskcc.org ssh -L 7777:localhost:7777 -N {exec_host}
 
 Open `{notbook_url}` to access to the Jupyter Notebook.
 """.format(
         exec_host=exec_host,
-        path_private_key=path_private_key,
         user=os.environ["USER"],
         notbook_url=notbook_url
     )
@@ -213,14 +211,6 @@ def parse_arguments():
         help="Number of memory you need in GB"
     )
 
-    parser.add_argument(
-        "--key",
-        action="store",
-        dest="path_private_key",
-        default="<YOUR-PRIVATE-KEY>",
-        help="Path to your private key on your LOCAL machine"
-    )
-
     # parse arguments
     params = parser.parse_args()
 
@@ -245,7 +235,7 @@ def main():
 
     notbook_url = get_notebook_url("./notebook.stdout.log")
 
-    show_next_step(exec_host, params.path_private_key, notbook_url)
+    show_next_step(exec_host, notbook_url)
 
 
 if __name__ == "__main__":
