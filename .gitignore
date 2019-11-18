@@ -1,0 +1,4 @@
+.ipynb_checkpoints
+jupyter-notebook/notebook.launcher.log
+jupyter-notebook/notebook.stderr.log
+jupyter-notebook/notebook.stdout.log
