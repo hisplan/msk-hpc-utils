@@ -121,3 +121,7 @@ $ kill 33526
 ### From Your Local Workstation
 
 `CTRL+C` to terminate your SSH tunnel.
+
+## Pre-installed Software
+
+Please refer to [this page](./preinstalled-software/README.md): 
