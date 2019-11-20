@@ -124,4 +124,4 @@ $ kill 33526
 
 ## Pre-installed Software
 
-Please refer to [this page](./preinstalled-software/README.md): 
+Please refer to [this page](./preinstalled-software/README.md).
