@@ -17,6 +17,7 @@ Install [miniconda](https://docs.conda.io/en/latest/miniconda.html) on HPC:
 $ export MINICONDA_VERSION=4.5.1
 $ curl -O https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh
 $ bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -b -p $HOME/miniconda
+$ echo ". $HOME/miniconda/etc/profile.d/conda.sh" >> $HOME/.bash_profile
 ```
 
 Log out, log back in, and make sure you can run `conda`. For example, you should be able to check the conda version:
