@@ -36,13 +36,13 @@ $ conda create -n notebook python=3.6.5 pip jupyter
 Download and decompress the `msk-hpc-utils` package:
 
 ```bash
-curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.1.tar.gz | tar xz
+curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.2.tar.gz | tar xz
 ```
 
 You should now be able to run `launch.py`:
 
 ```
-$ cd msk-hpc-utils-0.0.1/jupyter-notebook/
+$ cd msk-hpc-utils-0.0.2/jupyter-notebook/
 
 $ python launch.py --help
 usage: launch.py [-h] --hours NUM_RUN_HOURS [--cores NUM_CORES]
@@ -53,12 +53,12 @@ optional arguments:
   --hours NUM_RUN_HOURS
                         Number of hours you need
   --cores NUM_CORES     Number of cores you need
-  --memory MEMORY_GB    Number of memory you need in GB
+  --memory MEMORY_GB    Amount of memory per CPU core in GB
 ```
 
 ## Launching Notebook
 
-Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 cores and 16 GB memory for 8 hours.
+Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 cores and 16 GB memory per CPU core for 8 hours.
 
 ```bash
 $ python launch.py \

@@ -208,7 +208,7 @@ def parse_arguments():
         dest="memory_gb",
         type=int,
         default=8,
-        help="Number of memory you need in GB"
+        help="Amount of memory per CPU core in GB"
     )
 
     # parse arguments
