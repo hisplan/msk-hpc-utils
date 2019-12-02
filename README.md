@@ -36,13 +36,13 @@ $ conda create -n notebook python=3.6.5 pip jupyter
 Download and decompress the `msk-hpc-utils` package:
 
 ```bash
-curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.2.tar.gz | tar xz
+curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.3.tar.gz | tar xz
 ```
 
 You should now be able to run `launch.py`:
 
 ```
-$ cd msk-hpc-utils-0.0.2/jupyter-notebook/
+$ cd msk-hpc-utils-0.0.3/jupyter-notebook/
 
 $ python launch.py --help
 usage: launch.py [-h] --hours NUM_RUN_HOURS [--cores NUM_CORES]
