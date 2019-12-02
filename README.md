@@ -58,7 +58,7 @@ optional arguments:
 
 ## Launching Notebook
 
-Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 cores and 16 GB memory per CPU core for 8 hours.
+Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 cores and 16 GB memory per CPU core for 8 hours. Make sure to use Python 2.7.x which is the default in Lilac.
 
 ```bash
 $ python launch.py \
