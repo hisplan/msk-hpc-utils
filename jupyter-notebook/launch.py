@@ -152,29 +152,30 @@ def get_notebook_url(stdout_log):
         stdout = fin.read()
 
     # http://localhost:7777/?token=8cd3e3b2e7c404be225dc749db8dc3d87c14ea90dca26bca
-    match = re.search(r"(http://.*\?token=.*)", stdout)
+    match = re.search(r"(http://localhost:(\d+)/\?token=.*)", stdout)
 
     if match:
-        return match.group(1)
+        return match.group(1), match.group(2)
 
     logger.error("Unable to find a token!")
 
-    return None
+    return None, None
 
 
-def show_next_step(exec_host, notbook_url):
+def show_next_step(exec_host, notebook_url, notebook_port):
 
     msg = """Instructions:
 
 From your local workstation, run the command below:
 
-$ ssh -o ServerAliveInterval=120 -A -L 7777:localhost:7777 {user}@lilac.mskcc.org ssh -L 7777:localhost:7777 -N {exec_host}
+$ ssh -o ServerAliveInterval=120 -A -L {notebook_port}:localhost:{notebook_port} {user}@lilac.mskcc.org ssh -L {notebook_port}:localhost:{notebook_port} -N {exec_host}
 
-Open `{notbook_url}` to access to the Jupyter Notebook.
+Open `{notebook_url}` to access to the Jupyter Notebook.
 """.format(
         exec_host=exec_host,
         user=os.environ["USER"],
-        notbook_url=notbook_url
+        notebook_url=notebook_url,
+        notebook_port=notebook_port
     )
 
     logger.info(msg)
@@ -233,9 +234,9 @@ def main():
 
     time.sleep(10)
 
-    notbook_url = get_notebook_url("./notebook.stdout.log")
+    notebook_url, notebook_port = get_notebook_url("./notebook.stdout.log")
 
-    show_next_step(exec_host, notbook_url)
+    show_next_step(exec_host, notebook_url, notebook_port)
 
 
 if __name__ == "__main__":
