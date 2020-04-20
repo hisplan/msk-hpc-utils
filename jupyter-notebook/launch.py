@@ -34,6 +34,9 @@ def bsub(bsubline):
     process = subprocess.Popen(bsubline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output = process.stdout.readline()
 
+    if type(output) is bytes:
+        output = output.decode()
+
     # fixme: need better exception handling
     logger.info(output.rstrip())
 
@@ -53,7 +56,12 @@ def get_lsf_job_info(lsf_job_id):
     ]
 
     process = subprocess.Popen(bjobs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    line = process.stdout.read().rstrip("\n")
+    line = process.stdout.read()
+
+    if type(line) is bytes:
+        line = line.decode()
+
+    line = line.rstrip("\n")
 
     try:
         if line:
