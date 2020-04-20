@@ -11,38 +11,31 @@ $ ssh-add -K <YOUR-PRIVATE-KEY>
 $ ssh -A lilac
 ```
 
-Install [miniconda](https://docs.conda.io/en/latest/miniconda.html) on HPC:
-
-```
-$ export MINICONDA_VERSION=4.5.1
-$ curl -O https://repo.anaconda.com/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh
-$ bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -b -p $HOME/miniconda
-$ echo ". $HOME/miniconda/etc/profile.d/conda.sh" >> $HOME/.bash_profile
-```
+If you don't have Miniconda already installed under your HPC account, follow the instruction here to install it first: https://docs.conda.io/en/latest/miniconda.html (technically, you can replace Miniconda with Python3 + Virtualenv, but this will require a small change in `lsf-job.sh`).
 
 Log out, log back in, and make sure you can run `conda`. For example, you should be able to check the conda version:
 
 ```bash
-$ conda -V
-conda 4.5.1
+$ conda --version
+conda 4.8.2
 ```
 
 Create a conda environment with Python, pip, and Jupyter Notebook:
 
 ```bash
-$ conda create -n notebook python=3.6.5 pip jupyter
+$ conda create -n notebook python=3.7.6 pip jupyter
 ```
 
 Download and decompress the `msk-hpc-utils` package:
 
 ```bash
-curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.3.tar.gz | tar xz
+curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.4.tar.gz | tar xz
 ```
 
 You should now be able to run `launch.py`:
 
 ```
-$ cd msk-hpc-utils-0.0.3/jupyter-notebook/
+$ cd msk-hpc-utils-0.0.4/jupyter-notebook/
 
 $ python launch.py --help
 usage: launch.py [-h] --hours NUM_RUN_HOURS [--cores NUM_CORES]
@@ -56,7 +49,17 @@ optional arguments:
   --memory MEMORY_GB    Amount of memory per CPU core in GB
 ```
 
-## Launching Notebook
+### Configuration
+
+Jupyter Notebook requires a HTTP port to be open and accessible so that you can use Jupyter Notebook from your web browser. Since Lilac is a common resource, the port that you're trying to use for Jupyter Notebook could be already being used by someone else. Unfortunately, there is no easy/legit way to find a port that is not being used (unless you scan all the ports). For this reason, you need to manually and randomly choose one port and see if that works or not by trial and error.
+
+Suppose you picked a port 7779. Make sure to edit the `lsf-job.sh` file and update the port in the following lines:
+
+```
+jupyter_port=7777
+```
+
+### Launching Notebook
 
 Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 cores and 16 GB memory per CPU core for 8 hours. Make sure to use Python 2.7.x which is the default in Lilac.
 
@@ -87,9 +90,11 @@ $ ssh -o ServerAliveInterval=120 -A -L 7777:localhost:7777 chunj@lilac.mskcc.org
 Open `http://localhost:7777/?token=9122a28fe6901a9f883ba8766810d1f80c8be9e822cc1f6c` to access to the Jupyter Notebook.
 ```
 
-## Shutting Down
+### Shutting Down
 
-### From Lilac
+Shutting down rquires two steps, one needs to be done on Lilac, the other on your local machine.
+
+#### From Lilac
 
 Run `bjob` to find the LSF Job ID and kill the job by running `bkill`. If the job has already expired, you can skip this part and go to the next step.
 
@@ -119,7 +124,7 @@ chunj    33526  0.0  0.0 191164  4328 ?        Ss   09:56   0:00 ssh -L 7777:loc
 $ kill 33526
 ```
 
-### From Your Local Workstation
+#### From Your Local Workstation
 
 `CTRL+C` to terminate your SSH tunnel.
 
