@@ -2,6 +2,7 @@
 
 # customize to fit your own environment
 conda_env="notebook"
+jupyter_port=7777
 projects_folder="${HOME}/projects"
 
 
@@ -22,7 +23,7 @@ mkdir -p ${projects_folder}
 
 jupyter notebook \
   --no-browser \
-  --port 7777 \
+  --port ${jupyter_port} \
   --notebook-dir ${projects_folder} 2>&1 | tee ${stdout_log}
 
 conda deactivate
