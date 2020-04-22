@@ -56,3 +56,24 @@ ssh -o ServerAliveInterval=120 -A -p 2222 -L 7777:localhost:7777 chunj@xbio.mskc
 In the above commands, make sure to replace the user name `chunj` and the Jupyter Notebook port `7777` to yours.
 
 Finally, open the URL (from Step 1) in your browser to access the notebook.
+
+## Shutting Down
+
+Shutting down rquires two steps, one needs to be done on `xbio`, the other on your local machine. Do not forget to shut it down once you're done because `xbio` is a shared resource!
+
+#### From xbio
+
+Run `ps ux` to find the process that binds to port 7777 and kill it by running `kill`:
+
+```bash
+$ ps ux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+chunj    36641  0.0  0.0  63248  4592 ?        Ss   10:02   0:00 ssh -L 7779:localhost:7779 -N totoro
+chunj    36687  0.0  0.0 110244  1156 pts/11   R+   10:05   0:00 ps ux
+
+$ kill 36641
+```
+
+#### From Your Local Workstation
+
+`CTRL+C` to terminate your SSH tunnel.
