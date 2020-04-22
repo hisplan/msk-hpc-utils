@@ -113,7 +113,7 @@ $ bjobs
 No unfinished job found
 ```
 
-Run `ps ux` to find the process that binds to port 7777 and kill it by running `kill`:
+Run `ps ux` to find the process that binds to port 7777 (or the port you're using for Jupyter Notebook) and kill it by running `kill`:
 
 ```bash
 $ ps ux
