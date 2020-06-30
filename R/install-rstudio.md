@@ -8,6 +8,8 @@ You must log out and log back in (or reboot might be required).
 
 ## Install RStudio on Lilac.
 
+Download `rstudio.yaml` from this [link](rstudio.yaml), and create a virtual environment using conda:
+
 ```bash
 conda env create -f rstudio.yaml
 ```
