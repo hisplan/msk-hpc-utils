@@ -1,0 +1,8 @@
+name: rstudio
+channels:
+  - r
+dependencies:
+  - python=3.7.6
+  - pip
+  - r
+  - rstudio
