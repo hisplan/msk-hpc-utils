@@ -29,13 +29,13 @@ $ conda create -n notebook python=3.7.6 pip jupyter
 Download and decompress the `msk-hpc-utils` package:
 
 ```bash
-curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.4.tar.gz | tar xz
+curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.6.tar.gz | tar xz
 ```
 
 You should now be able to run `launch.py`:
 
 ```
-$ cd msk-hpc-utils-0.0.4/jupyter-notebook/
+$ cd msk-hpc-utils-0.0.6/jupyter-notebook/
 
 $ python launch.py --help
 usage: launch.py [-h] --hours NUM_RUN_HOURS [--cores NUM_CORES]
@@ -51,12 +51,22 @@ optional arguments:
 
 ### Configuration
 
+#### HTTP Port
+
 Jupyter Notebook requires a HTTP port to be open and accessible so that you can use Jupyter Notebook from your web browser. Since Lilac is a common resource, the port that you're trying to use for Jupyter Notebook could be already being used by someone else. Unfortunately, there is no easy/legit way to find a port that is not being used (unless you scan all the ports). For this reason, you need to manually and randomly choose one port and see if that works or not by trial and error.
 
 Suppose you picked a port 7779. Make sure to edit the `lsf-job.sh` file and update the port in the following lines:
 
 ```
 jupyter_port=7777
+```
+
+#### Conda Environment
+
+In the earlier section, we have created a new conda environment called `notebook`. If you're using a different conda environment, make sure you update the `lsf-job.sh` file accordingly:
+
+```
+conda_env="notebook"
 ```
 
 ### Launching Notebook
