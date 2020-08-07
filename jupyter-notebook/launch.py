@@ -14,7 +14,7 @@ logger = logging.getLogger("notebook-launcher")
 logger.setLevel(logging.DEBUG)
 
 # create formatter
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
 # create console handler and set level to debug
 console_log_handler = logging.StreamHandler(sys.stdout)
@@ -31,7 +31,9 @@ logger.addHandler(log_file_handler)
 def bsub(bsubline):
     "execute lsf bsub"
 
-    process = subprocess.Popen(bsubline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(
+        bsubline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     output = process.stdout.readline()
 
     if type(output) is bytes:
@@ -40,7 +42,7 @@ def bsub(bsubline):
     # fixme: need better exception handling
     logger.info(output.rstrip())
 
-    lsf_job_id = int(output.strip().split()[1].strip('<>'))
+    lsf_job_id = int(output.strip().split()[1].strip("<>"))
 
     return lsf_job_id
 
@@ -48,12 +50,7 @@ def bsub(bsubline):
 def get_lsf_job_info(lsf_job_id):
     "get working directory, path to stdout/stderr log, and cmd of LSF leader job"
 
-    bjobs = [
-        "bjobs",
-        "-o", "stat exec_host",
-        "-noheader",
-        str(lsf_job_id)
-    ]
+    bjobs = ["bjobs", "-o", "stat exec_host", "-noheader", str(lsf_job_id)]
 
     process = subprocess.Popen(bjobs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     line = process.stdout.read()
@@ -65,7 +62,7 @@ def get_lsf_job_info(lsf_job_id):
 
     try:
         if line:
-            status, exec_host = line.split(' ')
+            status, exec_host = line.split(" ")
             return status, exec_host
 
     except Exception:
@@ -77,14 +74,14 @@ def get_lsf_job_info(lsf_job_id):
 def parse_execution_host_string(input_str):
     "parse LSF execution host string"
 
-    if input_str == '-':
+    if input_str == "-":
         return 1, "Unknown"
 
     # fixme: pre-compile regex
 
     num = None
     host = None
-    match = re.search(r'^((\d+)\*)?(.*)$', input_str)
+    match = re.search(r"^((\d+)\*)?(.*)$", input_str)
     if match:
         num = 1 if match.group(2) is None else match.group(2)
         host = match.group(3)
@@ -99,9 +96,7 @@ def launch(hours, cores, memory):
 
     logger.info(
         "Requesting {cores} cores, {memory} GB memory for {hours} hours...".format(
-            cores=cores,
-            memory=memory,
-            hours=hours
+            cores=cores, memory=memory, hours=hours
         )
     )
 
@@ -111,12 +106,17 @@ def launch(hours, cores, memory):
     lsf_job_id = bsub(
         [
             "bsub",
-            "-J", "notebook",
-            "-W", "{}:00".format(hours),
-            "-n", str(cores),
-            "-R", "rusage[mem={}]".format(memory),
-            "-eo", "./notebook.stderr.log",
-            job
+            "-J",
+            "notebook",
+            "-W",
+            "{}:00".format(hours),
+            "-n",
+            str(cores),
+            "-R",
+            "rusage[mem={}]".format(memory),
+            "-eo",
+            "./notebook.stderr.log",
+            job,
         ]
     )
 
@@ -165,8 +165,6 @@ def get_notebook_url(stdout_log):
     if match:
         return match.group(1), match.group(2)
 
-    logger.error("Unable to find a token!")
-
     return None, None
 
 
@@ -183,7 +181,7 @@ Open `{notebook_url}` to access to the Jupyter Notebook.
         exec_host=exec_host,
         user=os.environ["USER"],
         notebook_url=notebook_url,
-        notebook_port=notebook_port
+        notebook_port=notebook_port,
     )
 
     logger.info(msg)
@@ -199,7 +197,7 @@ def parse_arguments():
         dest="num_run_hours",
         type=int,
         help="Number of hours you need",
-        required=True
+        required=True,
     )
 
     parser.add_argument(
@@ -208,7 +206,7 @@ def parse_arguments():
         dest="num_cores",
         type=int,
         default=1,
-        help="Number of cores you need"
+        help="Number of cores you need",
     )
 
     parser.add_argument(
@@ -217,7 +215,11 @@ def parse_arguments():
         dest="memory_gb",
         type=int,
         default=8,
-        help="Amount of memory per CPU core in GB"
+        help="Amount of memory per CPU core in GB",
+    )
+
+    parser.add_argument(
+        "--max-attempts", action="store", dest="max_attempts", type=int, default=20,
     )
 
     # parse arguments
@@ -232,19 +234,36 @@ def main():
 
     logger.info("Starting...")
 
-    lsf_job_id = launch(
-        params.num_run_hours,
-        params.num_cores,
-        params.memory_gb
-    )
+    lsf_job_id = launch(params.num_run_hours, params.num_cores, params.memory_gb)
 
     exec_host = wait_till_running(lsf_job_id)
 
-    time.sleep(10)
+    attempt = 1
+    while attempt <= params.max_attempts:
+        try:
+            notebook_url, notebook_port = get_notebook_url("./notebook.stdout.log")
 
-    notebook_url, notebook_port = get_notebook_url("./notebook.stdout.log")
+            if notebook_url and notebook_port:
+                show_next_step(exec_host, notebook_url, notebook_port)
+                exit(0)
 
-    show_next_step(exec_host, notebook_url, notebook_port)
+            logger.warning(
+                "Unable to find a token! (attempt: {}/{})".format(
+                    attempt, params.max_attempts
+                )
+            )
+        except Exception as ex:
+            logger.warning(str(ex))
+
+        attempt += 1
+        time.sleep(5)
+
+    logger.error(
+        "Please check the log file and see if your job {} is still alive.".format(
+            lsf_job_id
+        )
+    )
+    exit(1)
 
 
 if __name__ == "__main__":
