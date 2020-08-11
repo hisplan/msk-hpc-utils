@@ -176,7 +176,7 @@ From your local workstation, run the command below:
 
 $ ssh -o ServerAliveInterval=120 -A -L {notebook_port}:localhost:{notebook_port} {user}@lilac.mskcc.org ssh -L {notebook_port}:localhost:{notebook_port} -N {exec_host}
 
-Open `{notebook_url}` to access to the Jupyter Notebook.
+Open `{notebook_url}` to access the Jupyter Notebook.
 """.format(
         exec_host=exec_host,
         user=os.environ["USER"],
@@ -244,11 +244,12 @@ def main():
             notebook_url, notebook_port = get_notebook_url("./notebook.stdout.log")
 
             if notebook_url and notebook_port:
+                logger.info("We're ready!")
                 show_next_step(exec_host, notebook_url, notebook_port)
                 exit(0)
 
             logger.warning(
-                "Unable to find a token! (attempt: {}/{})".format(
+                "No token found yet. Trying again... {}/{})".format(
                     attempt, params.max_attempts
                 )
             )
