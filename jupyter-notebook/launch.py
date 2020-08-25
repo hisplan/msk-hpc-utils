@@ -92,33 +92,39 @@ def parse_execution_host_string(input_str):
     return int(num), host
 
 
-def launch(hours, cores, memory):
+def launch(hours, cpu, memory, gpu, queue_name):
 
     logger.info(
-        "Requesting {cores} cores, {memory} GB memory for {hours} hours...".format(
-            cores=cores, memory=memory, hours=hours
+        "Requesting {cpu} CPUs, {gpu} GPUs, {memory} GB memory for {hours} hours...".format(
+            cpu=cpu, gpu=gpu, memory=memory, hours=hours
         )
     )
 
     # job = "./test-job.sh"
     job = "./lsf-job.sh"
 
-    lsf_job_id = bsub(
-        [
-            "bsub",
-            "-J",
-            "notebook",
-            "-W",
-            "{}:00".format(hours),
-            "-n",
-            str(cores),
-            "-R",
-            "rusage[mem={}]".format(memory),
-            "-eo",
-            "./notebook.stderr.log",
-            job,
-        ]
-    )
+    cmd = [
+        "bsub",
+        "-q",
+        queue_name,
+        "-J",
+        "notebook",
+        "-W",
+        "{}:00".format(hours),
+        "-eo",
+        "./notebook.stderr.log",
+        "-n",
+        str(cpu),
+        "-R",
+        "rusage[mem={}]".format(memory),
+    ]
+
+    if gpu > 0:
+        cmd.extend(["-gpu", '"num=1:mode=exclusive_process"'])
+
+    cmd.append(job)
+
+    lsf_job_id = bsub(cmd)
 
     logger.info("LSF Job ID: {}".format(lsf_job_id))
 
@@ -201,12 +207,21 @@ def parse_arguments():
     )
 
     parser.add_argument(
-        "--cores",
+        "--cpu",
         action="store",
-        dest="num_cores",
+        dest="num_cpu",
         type=int,
         default=1,
-        help="Number of cores you need",
+        help="Number of CPUs you need",
+    )
+
+    parser.add_argument(
+        "--gpu",
+        action="store",
+        dest="num_gpu",
+        type=int,
+        default=0,
+        help="Number of GPUs you need",
     )
 
     parser.add_argument(
@@ -219,6 +234,14 @@ def parse_arguments():
     )
 
     parser.add_argument(
+        "--queue",
+        action="store",
+        dest="queue_name",
+        default="cpuqueue",
+        help="LSF queue name",
+    )
+
+    parser.add_argument(
         "--max-attempts", action="store", dest="max_attempts", type=int, default=20,
     )
 
@@ -228,13 +251,35 @@ def parse_arguments():
     return params
 
 
+def determine_queue(queue_name, gpu):
+    # mononoke supports both cpu and gpu
+    if queue_name == "mononoke":
+        return queue_name
+    else:
+        if gpu > 0:
+            # gpu request must goes to gpuqueue
+            return "gpuqueue"
+        else:
+            # cpu request should go to cpuqueue
+            return "cpuqueue"
+
+
 def main():
 
     params = parse_arguments()
 
     logger.info("Starting...")
 
-    lsf_job_id = launch(params.num_run_hours, params.num_cores, params.memory_gb)
+    # determine which queue to use
+    params.queue_name = determine_queue(params.queue_name, params.num_gpu)
+
+    lsf_job_id = launch(
+        hours=params.num_run_hours,
+        cpu=params.num_cpu,
+        memory=params.memory_gb,
+        gpu=params.num_gpu,
+        queue_name=params.queue_name,
+    )
 
     exec_host = wait_till_running(lsf_job_id)
 
@@ -249,7 +294,7 @@ def main():
                 exit(0)
 
             logger.warning(
-                "No token found yet. Trying again... {}/{})".format(
+                "No token found yet. Trying again... ({}/{})".format(
                     attempt, params.max_attempts
                 )
             )

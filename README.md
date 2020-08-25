@@ -29,24 +29,28 @@ $ conda create -n notebook python=3.7.6 pip jupyter
 Download and decompress the `msk-hpc-utils` package:
 
 ```bash
-curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.6.tar.gz | tar xz
+curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.7.tar.gz | tar xz
 ```
 
 You should now be able to run `launch.py`:
 
 ```
-$ cd msk-hpc-utils-0.0.6/jupyter-notebook/
+$ cd msk-hpc-utils-0.0.7/jupyter-notebook/
 
 $ python launch.py --help
-usage: launch.py [-h] --hours NUM_RUN_HOURS [--cores NUM_CORES]
-                 [--memory MEMORY_GB]
+usage: launch.py [-h] --hours NUM_RUN_HOURS [--cpu NUM_CPU] [--gpu NUM_GPU]
+                 [--memory MEMORY_GB] [--queue QUEUE_NAME]
+                 [--max-attempts MAX_ATTEMPTS]
 
 optional arguments:
   -h, --help            show this help message and exit
   --hours NUM_RUN_HOURS
                         Number of hours you need
-  --cores NUM_CORES     Number of cores you need
+  --cpu NUM_CPU         Number of CPUs you need
+  --gpu NUM_GPU         Number of GPUs you need
   --memory MEMORY_GB    Amount of memory per CPU core in GB
+  --queue QUEUE_NAME    LSF queue name
+  --max-attempts MAX_ATTEMPTS
 ```
 
 ### Configuration
@@ -71,27 +75,29 @@ conda_env="notebook"
 
 ### Launching Notebook
 
-Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 cores and 16 GB memory per CPU core for 8 hours.
+Log in to Lilac and run the command below which will launch Jupyter Notebook in Lilac's compute node. For example, below will request 2 CPUs, 1 GPU, and 16 GB memory per CPU for 8 hours.
 
 ```bash
 $ python launch.py \
     --hours=8 \
-    --cores=2 \
+    --cpu=2 \
+    --gpu=1 \
     --memory=16
 ```
 
 The output would look something like below. Follow the instructions shown in the output, which will automatically set up a SSH tunnel to the Jupyter Notebook, and you should be able to access the notebook from your browser:
 
 ```
-2019-11-16 09:47:50,604 - INFO - Starting...
-2019-11-16 09:47:50,604 - INFO - Requesting 2 cores, 16 GB memory for 1 hours...
-2019-11-16 09:47:50,660 - INFO - Job <13298296> is submitted to default queue <cpuqueue>.
-2019-11-16 09:47:50,660 - INFO - LSF Job ID: 13298296
-2019-11-16 09:47:50,685 - INFO - Job status: PEND
-2019-11-16 09:47:52,709 - INFO - Job status: PEND
-2019-11-16 09:47:56,736 - INFO - Job status: RUN
-2019-11-16 09:47:56,736 - INFO - Your job appears to be running now...
-2019-11-16 09:48:06,749 - INFO - Instructions:
+2020-08-13 22:50:50,648 - INFO - Starting...
+2020-08-13 22:50:50,681 - INFO - Requesting 2 CPUs, 1 GPUs, 16 GB memory for 8 hours...
+2020-08-13 22:50:50,769 - INFO - Job <16499628> is submitted to queue <gpuqueue>.
+2020-08-13 22:50:50,769 - INFO - LSF Job ID: 16499628
+2020-08-13 22:50:50,792 - INFO - Job status: PEND
+2020-08-13 22:50:52,818 - INFO - Job status: PEND
+2020-08-13 22:50:56,849 - INFO - Job status: RUN
+2020-08-13 22:50:56,850 - INFO - Your job appears to be running now...
+2020-08-13 22:50:56,854 - INFO - We're ready!
+2020-08-13 22:50:56,855 - INFO - Instructions:
 
 From your local workstation, run the command below:
 
@@ -111,13 +117,13 @@ Run `bjob` to find the LSF Job ID and kill the job by running `bkill`. If the jo
 ```bash
 $ bjobs
        JOBID       USER     JOB_NAME   STAT      QUEUE  FROM_HOST    EXEC_HOST   SUBMIT_TIME    START_TIME  TIME_LEFT
-    13298296      chunj     notebook    RUN   cpuqueue      lilac         lt11  Nov 17 20:42  Nov 17 20:42     0:51 L
+    16499628      chunj     notebook    RUN   cpuqueue      lilac         lt11  Nov 17 20:42  Nov 17 20:42     0:51 L
 
-$ bkill 13298296
-Job <13298296> is being terminated
+$ bkill 16499628
+Job <16499628> is being terminated
 
-$ bkill 13298296
-Job <13298296>: Job has already finished
+$ bkill 16499628
+Job <16499628>: Job has already finished
 
 $ bjobs
 No unfinished job found

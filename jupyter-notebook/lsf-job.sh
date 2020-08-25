@@ -5,7 +5,9 @@ conda_env="notebook"
 jupyter_port=7777
 projects_folder="${HOME}/projects"
 
-
+# customize if you want a different version of cuda/cudnn
+module add cudnn/7.6-cuda10.1
+module add cuda/10.1
 
 # LSF parameters
 export job_id=$1
