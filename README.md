@@ -29,13 +29,13 @@ $ conda create -n notebook python=3.7.6 pip jupyter
 Download and decompress the `msk-hpc-utils` package:
 
 ```bash
-curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.7.tar.gz | tar xz
+curl -L https://github.com/hisplan/msk-hpc-utils/archive/v0.0.8.tar.gz | tar xz
 ```
 
 You should now be able to run `launch.py`:
 
 ```
-$ cd msk-hpc-utils-0.0.7/jupyter-notebook/
+$ cd msk-hpc-utils-0.0.8/jupyter-notebook/
 
 $ python launch.py --help
 usage: launch.py [-h] --hours NUM_RUN_HOURS [--cpu NUM_CPU] [--gpu NUM_GPU]
@@ -108,7 +108,7 @@ Open `http://localhost:7777/?token=9122a28fe6901a9f883ba8766810d1f80c8be9e822cc1
 
 ### Shutting Down
 
-Shutting down rquires two steps, one needs to be done on Lilac, the other on your local machine.
+Shutting down requires two steps, one needs to be done on Lilac, the other on your local machine.
 
 #### From Lilac
 
