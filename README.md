@@ -106,6 +106,8 @@ $ ssh -o ServerAliveInterval=120 -A -L 7777:localhost:7777 chunj@lilac.mskcc.org
 Open `http://localhost:7777/?token=9122a28fe6901a9f883ba8766810d1f80c8be9e822cc1f6c` to access to the Jupyter Notebook.
 ```
 
+(*) If you are not on MSK Network and you do not have MSK VPN, try this [workaround](./jupyter-via-xbio.md) (xbio account required)
+
 ### Shutting Down
 
 Shutting down requires two steps, one needs to be done on Lilac, the other on your local machine.
