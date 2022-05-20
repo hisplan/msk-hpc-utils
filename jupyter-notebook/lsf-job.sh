@@ -6,8 +6,8 @@ jupyter_port=7777
 projects_folder="${HOME}/projects"
 
 # customize if you want a different version of cuda/cudnn
-module add cudnn/7.6-cuda10.1
-module add cuda/10.1
+module add cuda/11.3
+module add cudnn/8.1.0-cuda11.2
 
 # LSF parameters
 export job_id=$1
